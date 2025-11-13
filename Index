@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juiced Odds - Choose Your Game</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Russo+One&family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(5, 20, 50, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 2px solid #FFD700;
+        }
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-logo {
+            font-family: 'Russo One', sans-serif;
+            font-size: 28px;
+            color: #FFD700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+        .nav-link:hover {
+            color: #FFD700;
+        }
+        .login-btn {
+            background: #FFD700;
+            color: #000;
+            padding: 10px 25px;
+            border-radius: 25px;
+            border: 2px solid #FFD700;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .login-btn:hover {
+            background: transparent;
+            color: #FFD700;
+        }
+
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #000428 0%, #004e92 100%);
+            overflow: hidden;
+            padding-top: 80px;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            background-image: url('https://page.gensparksite.com/v1/base64_upload/77c690c74ee132fb010726d73cf34a99');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.15;
+            z-index: 0;
+            pointer-events: none;
+            animation: pulse 8s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.15; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.25; }
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 1200px;
+            padding: 40px 20px;
+        }
+        .hero-logo {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
+            background-image: url('https://page.gensparksite.com/v1/base64_upload/77c690c74ee132fb010726d73cf34a99');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.6));
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .hero h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 80px;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            line-height: 1;
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.4);
+        }
+        .hero h1 .highlight {
+            color: #FFD700;
+            text-shadow: 0 0 60px rgba(255, 215, 0, 0.8);
+        }
+        .hero .subtitle {
+            font-family: 'Russo One', sans-serif;
+            font-size: 32px;
+            color: #FFD700;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        .hero p {
+            font-size: 20px;
+            color: #ccc;
+            max-width: 800px;
+            margin: 0 auto 50px;
+            line-height: 1.8;
+        }
+        .cta-button {
+            display: inline-block;
+            background: #FFD700;
+            color: #000;
+            padding: 20px 50px;
+            font-size: 22px;
+            font-weight: 800;
+            text-transform: uppercase;
+            text-decoration: none;
+            border-radius: 50px;
+            border: 3px solid #FFD700;
+            transition: all 0.3s;
+            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.4);
+            letter-spacing: 2px;
+        }
+        .cta-button:hover {
+            background: transparent;
+            color: #FFD700;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(255, 215, 0, 0.6);
+        }
+
+        .games-section {
+            padding: 100px 20px;
+            background: #000;
+            position: relative;
+        }
+        .games-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to bottom, #004e92, #000);
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+            position: relative;
+            z-index: 1;
+        }
+        .section-header h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 60px;
+            color: #FFD700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+        }
+        .section-header p {
+            font-size: 18px;
+            color: #999;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 60px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            padding: 12px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 700;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: #FFD700;
+            color: #000;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 40px;
+            margin-bottom: 80px;
+        }
+        .game-card {
+            background: linear-gradient(135deg, #051428 0%, #003366 100%);
+            border: 3px solid #FFD700;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s;
+            cursor: pointer;
+            position: relative;
+        }
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        .game-card:hover::before {
+            left: 100%;
+        }
+        .game-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.5);
+            border-color: #fff;
+        }
+        .game-image {
+            width: 100%;
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        .game-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.4s;
+            padding: 20px;
+        }
+        .game-card:hover .game-image img {
+            transform: scale(1.1);
+        }
+        .game-image .default-image {
+            width: 100%;
+            height: 100%;
+            background-image: url('https://page.gensparksite.com/v1/base64_upload/77c690c74ee132fb010726d73cf34a99');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.8;
+            transition: transform 0.4s;
+        }
+        .game-card:hover .game-image .default-image {
+            transform: scale(1.1);
+        }
+        .featured-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #FF4444;
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(255, 68, 68, 0.6);
+            z-index: 10;
+            letter-spacing: 1px;
+        }
+        .game-info {
+            padding: 30px;
+        }
+        .game-category {
+            display: inline-block;
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .game-title {
+            font-family: 'Russo One', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .game-description {
+            color: #ccc;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        .play-btn {
+            width: 100%;
+            background: #FFD700;
+            color: #000;
+            padding: 15px;
+            border: 3px solid #FFD700;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .play-btn:hover {
+            background: transparent;
+            color: #FFD700;
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 100px 20px;
+            grid-column: 1 / -1;
+        }
+        .empty-state i {
+            font-size: 80px;
+            color: #FFD700;
+            margin-bottom: 30px;
+            opacity: 0.5;
+        }
+        .empty-state h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 36px;
+            color: #888;
+            margin-bottom: 15px;
+        }
+
+        .admin-fab {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 70px;
+            height: 70px;
+            background: #FFD700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #000;
+            cursor: pointer;
+            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.5);
+            transition: all 0.3s;
+            z-index: 1000;
+            border: 3px solid #000;
+        }
+        .admin-fab:hover {
+            transform: scale(1.15) rotate(90deg);
+            box-shadow: 0 15px 50px rgba(255, 215, 0, 0.8);
+        }
+
+        footer {
+            background: #000;
+            border-top: 3px solid #FFD700;
+            padding: 60px 20px 40px;
+            text-align: center;
+        }
+        footer p {
+            color: #666;
+            font-size: 14px;
+            line-height: 2;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 50px;
+            }
+            .hero .subtitle {
+                font-size: 24px;
+            }
+            .section-header h2 {
+                font-size: 40px;
+            }
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+            .nav-links {
+                gap: 15px;
+            }
+            .nav-link {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-logo">JUICED ODDS</div>
+            <div class="nav-links">
+                <a href="#" class="nav-link">Home</a>
+                <a href="#games" class="nav-link">Games</a>
+                <a href="#" class="nav-link">About</a>
+                <a href="admin.html" class="login-btn">Admin</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-logo"></div>
+            <h1>Choose Your <span class="highlight">Path</span></h1>
+            <p class="subtitle">Premium Casino Simulators</p>
+            <p>Experience the thrill of Las Vegas from anywhere. Authentic games with real casino rules, progressive jackpots, and detailed analytics. Perfect for practice, strategy development, or pure entertainment.</p>
+            <a href="#games" class="cta-button">
+                <i class="fas fa-dice"></i> Play Now
+            </a>
+        </div>
+    </section>
+
+    <section id="games" class="games-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Game Library</h2>
+                <p>Select your game and test your skills</p>
+            </div>
+
+            <div class="filter-bar">
+                <button class="filter-btn active" data-category="all">All Games</button>
+                <button class="filter-btn" data-category="Card Games">Card Games</button>
+                <button class="filter-btn" data-category="Dice Games">Dice Games</button>
+                <button class="filter-btn" data-category="Slots">Slots</button>
+                <button class="filter-btn" data-category="Table Games">Table Games</button>
+                <button class="filter-btn" data-category="Specialty">Specialty</button>
+            </div>
+
+            <div class="games-grid" id="gamesGrid">
+                <div class="empty-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <h3>Loading games...</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="admin-fab" onclick="window.location.href='admin.html'" title="Manage Games">
+        <i class="fas fa-cog"></i>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Juiced Odds. All rights reserved.</p>
+            <p>For entertainment purposes only. Play responsibly.</p>
+            <p style="margin-top: 20px; font-size: 12px;">These are simulators and not real gambling.</p>
+        </div>
+    </footer>
+
+    <script>
+        let allGames = [];
+        let currentFilter = 'all';
+
+        async function loadGames() {
+            try {
+                const response = await fetch('tables/games?limit=100&sort=-created_at');
+                const data = await response.json();
+                allGames = data.data.filter(game => game.active);
+                renderGames();
+            } catch (error) {
+                console.error('Error loading games:', error);
+                document.getElementById('gamesGrid').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Error loading games</h3>
+                        <p style="color: #888;">Please try again later</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderGames() {
+            const grid = document.getElementById('gamesGrid');
+            
+            const filteredGames = currentFilter === 'all' 
+                ? allGames 
+                : allGames.filter(game => game.category === currentFilter);
+
+            if (filteredGames.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No games available</h3>
+                        <p style="color: #888;">Check back soon or add games via the admin panel</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filteredGames.map(game => `
+                <div class="game-card" onclick="playGame('${game.game_url}')">
+                    ${game.featured ? '<span class="featured-badge">⚡ Featured</span>' : ''}
+                    <div class="game-image">
+                        ${game.image_url ? 
+                            `<img src="${game.image_url}" alt="${game.title}">` : 
+                            `<div class="default-image"></div>`
+                        }
+                    </div>
+                    <div class="game-info">
+                        <span class="game-category">${game.category || 'Uncategorized'}</span>
+                        <h3 class="game-title">${game.title}</h3>
+                        <p class="game-description">${game.description || 'No description available'}</p>
+                        <button class="play-btn">
+                            <i class="fas fa-play-circle"></i> Play Now
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function playGame(url) {
+            window.location.href = url;
+        }
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.category;
+                renderGames();
+            });
+        });
+
+        document.querySelectorAll('<span class="cursor">█</span>
