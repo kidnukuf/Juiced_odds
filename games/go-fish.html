@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Fish Casino - Juiced Odds</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0a4d68 0%, #05445e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .juiced-logo {
+            display: block;
+            max-width: 180px;
+            margin: 0 auto 20px;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            color: #FFD700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .game-area {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .betting-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .bet-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .bet-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #4CAF50;
+            border-radius: 5px;
+            font-size: 1.1em;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.4);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-fold {
+            background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-play {
+            background: linear-gradient(135deg, #2196F3 0%, #0b7dda 100%);
+            color: white;
+        }
+
+        .cards-section {
+            margin: 20px 0;
+        }
+
+        .cards-label {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .cards-display {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            min-height: 120px;
+            align-items: center;
+        }
+
+        .card {
+            width: 80px;
+            height: 110px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card.hearts, .card.diamonds {
+            color: #f44336;
+        }
+
+        .card.clubs, .card.spades {
+            color: #000;
+        }
+
+        .card-rank {
+            font-size: 1.8em;
+        }
+
+        .card-suit {
+            font-size: 2em;
+        }
+
+        .results-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            margin: 10px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .result-item.loss {
+            border-left-color: #f44336;
+        }
+
+        .result-item.win {
+            border-left-color: #FFC107;
+        }
+
+        .result-title {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .result-detail {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+
+        .credits-display {
+            text-align: center;
+            font-size: 1.5em;
+            color: #FFD700;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .card {
+                width: 60px;
+                height: 85px;
+                font-size: 1.2em;
+            }
+
+            .bet-input {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://page.gensparksite.com/v1/base64_upload/77c690c74ee132fb010726d73cf34a99" alt="Juiced Odds" class="juiced-logo">
+        
+        <h1>🎣 GO FISH CASINO 🎣</h1>
+        <p class="subtitle">10-Card Book Poker Game • 5 Player + 5 Community Cards</p>
+
+        <div class="credits-display">
+            Credits: $<span id="credits">1000</span>
+        </div>
+
+        <div class="game-area">
+            <!-- Betting Section -->
+            <div class="betting-section" id="bettingSection">
+                <h2>Place Your Bets</h2>
+                <div class="bet-row">
+                    <div class="bet-input">
+                        <label>Ante Bet (Required) $5-$500</label>
+                        <input type="number" id="anteBet" value="10" min="5" max="500">
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="dealCards()">🎴 DEAL CARDS</button>
+            </div>
+
+            <!-- Player Cards -->
+            <div class="cards-section hidden" id="playerCardsSection">
+                <div class="cards-label">Your 5 Cards</div>
+                <div class="cards-display" id="playerCards"></div>
+            </div>
+
+            <!-- Decision Section -->
+            <div class="betting-section hidden" id="decisionSection">
+                <h2>Make Your Decision</h2>
+                <p style="margin-bottom: 15px;">Choose to FOLD or PLAY (1×, 2×, or 3× your Ante)</p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn-play" onclick="selectMultiplier(1)">PLAY 1× ($<span id="play1"></span>)</button>
+                    <button class="btn-play" onclick="selectMultiplier(2)">PLAY 2× ($<span id="play2"></span>)</button>
+                    <button class="btn-play" onclick="selectMultiplier(3)">PLAY 3× ($<span id="play3"></span>)</button>
+                    <button class="btn-fold" onclick="playerFold()">FOLD</button>
+                </div>
+            </div>
+
+            <!-- Community Cards -->
+            <div class="cards-section hidden" id="communityCardsSection">
+                <div class="cards-label">Community Cards</div>
+                <div class="cards-display" id="communityCards"></div>
+            </div>
+
+            <!-- Results -->
+            <div class="results-section hidden" id="resultsSection"></div>
+
+            <!-- New Game Button -->
+            <div class="hidden" id="newGameSection" style="text-align: center; margin-top: 20px;">
+                <button class="btn-primary" onclick="newGame()" style="font-size: 1.3em; padding: 15px 40px;">🎰 NEW GAME</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let game = null;
+        let credits = 1000;
+
+        function updateCredits(delta) {
+            credits += delta;
+            document.getElementById('credits').textContent = credits.toFixed(0);
+        }
+
+        class Card {
+            constructor(rank, suit) {
+                this.rank = rank;
+                this.suit = suit;
+            }
+            
+            getSuitSymbol() {
+                const symbols = {
+                    'hearts': '♥',
+                    'diamonds': '♦',
+                    'clubs': '♣',
+                    'spades': '♠'
+                };
+                return symbols[this.suit];
+            }
+        }
+
+        class Deck {
+            constructor() {
+                this.cards = [];
+                this.reset();
+            }
+            
+            reset() {
+                const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+                const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
+                
+                this.cards = [];
+                for (let suit of suits) {
+                    for (let rank of ranks) {
+                        this.cards.push(new Card(rank, suit));
+                    }
+                }
+            }
+            
+            shuffle() {
+                for (let i = this.cards.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+                }
+            }
+            
+            deal(count) {
+                return this.cards.splice(0, count);
+            }
+        }
+
+        class GoFishGame {
+            constructor() {
+                this.deck = new Deck();
+                this.playerCards = [];
+                this.communityCards = [];
+                this.bets = { ante: 0, play: 0 };
+            }
+            
+            startNewHand(ante) {
+                this.deck.reset();
+                this.deck.shuffle();
+                this.bets.ante = ante;
+                this.playerCards = this.deck.deal(5);
+                this.communityCards = this.deck.deal(5);
+            }
+
+            evaluateHand() {
+                const allCards = [...this.playerCards, ...this.communityCards];
+                const rankCounts = {};
+                
+                for (let card of allCards) {
+                    rankCounts[card.rank] = (rankCounts[card.rank] || 0) + 1;
+                }
+                
+                const groups = { quads: 0, trips: 0, pairs: 0, singles: 0 };
+                
+                for (let rank in rankCounts) {
+                    const count = rankCounts[rank];
+                    if (count === 4) groups.quads++;
+                    else if (count === 3) groups.trips++;
+                    else if (count === 2) groups.pairs++;
+                    else if (count === 1) groups.singles++;
+                }
+                
+                const totalPairs = groups.pairs + groups.trips + groups.quads;
+                const qualified = totalPairs >= 3;
+                
+                let handName = 'Non-Qualifying';
+                let payout = 0;
+                
+                if (qualified) {
+                    if (groups.pairs === 3 && groups.singles === 4) {
+                        handName = '3 Pairs + 4 Singles';
+                        payout = 2;
+                    } else if (groups.pairs === 4 && groups.singles === 2) {
+                        handName = '4 Pairs + 2 Singles';
+                        payout = 4;
+                    } else if (groups.pairs === 5) {
+                        handName = '5 Pairs';
+                        payout = 14;
+                    } else if (groups.quads === 1 && groups.pairs === 1) {
+                        handName = '1 Quad + Pairs';
+                        payout = 7;
+                    } else {
+                        handName = 'Qualified Hand';
+                        payout = 1;
+                    }
+                }
+                
+                return { handName, payout, qualified, groups };
+            }
+        }
+
+        function dealCards() {
+            const ante = parseInt(document.getElementById('anteBet').value);
+
+            if (ante < 5 || ante > 500) {
+                alert('Ante must be between $5 and $500');
+                return;
+            }
+
+            if (credits < ante) {
+                alert('Insufficient credits!');
+                return;
+            }
+
+            updateCredits(-ante);
+
+            game = new GoFishGame();
+            game.startNewHand(ante);
+
+            displayPlayerCards();
+            showDecisionSection();
+        }
+
+        function displayPlayerCards() {
+            const container = document.getElementById('playerCards');
+            container.innerHTML = '';
+            
+            game.playerCards.forEach(card => {
+                const cardEl = document.createElement('div');
+                cardEl.className = `card ${card.suit}`;
+                cardEl.innerHTML = `
+                    <div class="card-rank">${card.rank}</div>
+                    <div class="card-suit">${card.getSuitSymbol()}</div>
+                `;
+                container.appendChild(cardEl);
+            });
+
+            document.getElementById('playerCardsSection').classList.remove('hidden');
+            document.getElementById('bettingSection').classList.add('hidden');
+        }
+
+        function showDecisionSection() {
+            const ante = game.bets.ante;
+            document.getElementById('play1').textContent = ante;
+            document.getElementById('play2').textContent = ante * 2;
+            document.getElementById('play3').textContent = ante * 3;
+            document.getElementById('decisionSection').classList.remove('hidden');
+        }
+
+        function selectMultiplier(multiplier) {
+            const playBet = game.bets.ante * multiplier;
+            
+            if (credits < playBet) {
+                alert('Insufficient credits!');
+                return;
+            }
+
+            updateCredits(-playBet);
+            game.bets.play = playBet;
+            
+            document.getElementById('decisionSection').classList.add('hidden');
+            displayCommunityCards();
+            evaluateAndDisplayResults();
+        }
+
+        function playerFold() {
+            document.getElementById('decisionSection').classList.add('hidden');
+            displayCommunityCards();
+            
+            const container = document.getElementById('resultsSection');
+            container.innerHTML = `
+                <h2>❌ Folded</h2>
+                <div class="result-item loss">
+                    <div class="result-title">You Folded</div>
+                    <div class="result-detail">Lost Ante: -$${game.bets.ante}</div>
+                </div>
+            `;
+            container.classList.remove('hidden');
+            document.getElementById('newGameSection').classList.remove('hidden');
+        }
+
+        function displayCommunityCards() {
+            const container = document.getElementById('communityCards');
+            container.innerHTML = '';
+            
+            game.communityCards.forEach(card => {
+                const cardEl = document.createElement('div');
+                cardEl.className = `card ${card.suit}`;
+                cardEl.innerHTML = `
+                    <div class="card-rank">${card.rank}</div>
+                    <div class="card-suit">${card.getSuitSymbol()}</div>
+                `;
+                container.appendChild(cardEl);
+            });
+
+            document.getElementById('communityCardsSection').classList.remove('hidden');
+        }
+
+        function evaluateAndDisplayResults() {
+            const result = game.evaluateHand();
+            const container = document.getElementById('resultsSection');
+            
+            let html = '<h2>🎯 Results</h2>';
+
+            if (!result.qualified) {
+                html += `
+                    <div class="result-item loss">
+                        <div class="result-title">${result.handName}</div>
+                        <div class="result-detail">Need 3+ pairs to qualify</div>
+                        <div class="result-detail">Lost Ante: -$${game.bets.ante}</div>
+                        <div class="result-detail">Lost Play: -$${game.bets.play}</div>
+                    </div>
+                `;
+            } else {
+                const anteWin = game.bets.ante;
+                const playWin = game.bets.play * result.payout;
+                const totalWin = anteWin + playWin;
+                
+                updateCredits(totalWin);
+                
+                html += `
+                    <div class="result-item win">
+                        <div class="result-title">🎉 ${result.handName}</div>
+                        <div class="result-detail">Pays ${result.payout}:1 on Play</div>
+                        <div class="result-detail">Ante Win: +$${anteWin}</div>
+                        <div class="result-detail">Play Win: +$${playWin}</div>
+                        <div class="result-detail"><strong>Total Win: +$${totalWin}</strong></div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+            container.classList.remove('hidden');
+            document.getElementById('newGameSection').classList.remove('hidden');
+        }
+
+        function newGame() {
+            document.getElementById('bettingSection').classList.remove('hidden');
+            document.getElementById('playerCardsSection').classList.add('hidden');
+            document.getElementById('decisionSection').classList.add('hidden');
+            document.getElementById('communityCardsSection').classList.add('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('newGameSection').classList.add('hidden');
+            game = null;
+        }
+    </script>
+</body>
+</html>
