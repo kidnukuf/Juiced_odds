@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heads Up Hold'em - Juiced Odds</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #2c0735 0%, #1a0421 100%);
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .juiced-logo {
+            display: block;
+            max-width: 180px;
+            margin: 0 auto 20px;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+        }
+        #game {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: rgba(0, 80, 0, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+        h1 {
+            color: #FFD700;
+            text-shadow: 2px 2px 8px #000;
+            margin-bottom: 10px;
+        }
+        .credits {
+            font-size: 28px;
+            color: #FFD700;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .card {
+            display: inline-block;
+            width: 70px;
+            height: 100px;
+            margin: 5px;
+            background: white;
+            border: 3px solid #FFD700;
+            border-radius: 10px;
+            font-size: 32px;
+            line-height: 100px;
+            font-weight: bold;
+            color: #000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .card.red { color: #dc143c; }
+        .card.back {
+            background: linear-gradient(135deg, #8B0000 0%, #B22222 100%);
+            color: white;
+            font-size: 50px;
+        }
+        .hand-section {
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+        }
+        .hand-label {
+            font-size: 22px;
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 215, 0, 0.5);
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        input[type="number"] {
+            width: 100px;
+            padding: 10px;
+            font-size: 18px;
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .bet-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+        #result {
+            font-size: 22px;
+            font-weight: bold;
+            color: #FFD700;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            min-height: 50px;
+        }
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        th, td {
+            border: 1px solid #FFD700;
+            padding: 10px 15px;
+            color: #fff;
+        }
+        th {
+            background: rgba(255, 215, 0, 0.3);
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <img src="https://page.gensparksite.com/v1/base64_upload/77c690c74ee132fb010726d73cf34a99" alt="Juiced Odds" class="juiced-logo">
+        <h1>♠️ HEADS UP HOLD'EM ♠️</h1>
+        <p style="color: #FFD700;">Texas Hold'em vs Dealer • Ante Bonus • Trips Bonus</p>
+
+        <div class="credits">
+            💰 Credits: $<span id="credits">1000</span>
+        </div>
+
+        <div class="bet-section" id="initialBet">
+            <label style="color: #FFD700; font-weight: bold;">Ante Bet: $</label>
+            <input type="number" id="anteBet" min="5" max="100" value="10">
+            <br><br>
+            <label style="color: #FFD700; font-weight: bold;">
+                <input type="checkbox" id="tripsCheck" style="width: auto;">
+                Trips Bonus: $
+            </label>
+            <input type="number" id="tripsBet" min="5" max="100" value="10">
+            <br><br>
+            <button onclick="dealHand()">🎴 DEAL CARDS</button>
+        </div>
+
+        <div class="hand-section" style="display: none;" id="dealerSection">
+            <div class="hand-label">🎰 Dealer's Cards</div>
+            <div id="dealerCards"></div>
+        </div>
+
+        <div class="hand-section" style="display: none;" id="communitySection">
+            <div class="hand-label">🎲 Community Cards (Flop, Turn, River)</div>
+            <div id="communityCards"></div>
+        </div>
+
+        <div class="hand-section" style="display: none;" id="playerSection">
+            <div class="hand-label">🎯 Your Cards</div>
+            <div id="playerCards"></div>
+        </div>
+
+        <div id="actions" style="margin: 20px 0; display: none;">
+            <div id="actionMessage" style="color: #FFD700; font-size: 20px; margin: 15px 0;"></div>
+            <button id="foldBtn" onclick="playerFold()">FOLD</button>
+            <button id="checkBtn" onclick="playerCheck()" style="display: none;">CHECK</button>
+            <button id="bet2xBtn" onclick="playerBet(2)" style="display: none;">BET 2X ($<span id="bet2x">0</span>)</button>
+            <button id="bet1xBtn" onclick="playerBet(1)" style="display: none;">BET 1X ($<span id="bet1x">0</span>)</button>
+        </div>
+
+        <div id="result"></div>
+
+        <h3 style="color: #FFD700; margin-top: 40px;">📊 Ante Bonus Paytable</h3>
+        <table>
+            <tr><th>Hand</th><th>Bonus Payout</th></tr>
+            <tr><td>Royal Flush</td><td>50:1</td></tr>
+            <tr><td>Straight Flush</td><td>20:1</td></tr>
+            <tr><td>Four of a Kind</td><td>10:1</td></tr>
+            <tr><td>Full House</td><td>3:1</td></tr>
+            <tr><td>Flush</td><td>2:1</td></tr>
+            <tr><td>Straight</td><td>1:1</td></tr>
+        </table>
+
+        <h3 style="color: #FFD700; margin-top: 30px;">💎 Trips Bonus Paytable</h3>
+        <table>
+            <tr><th>Hand</th><th>Payout</th></tr>
+            <tr><td>Royal Flush</td><td>50:1</td></tr>
+            <tr><td>Straight Flush</td><td>40:1</td></tr>
+            <tr><td>Four of a Kind</td><td>30:1</td></tr>
+            <tr><td>Full House</td><td>9:1</td></tr>
+            <tr><td>Flush</td><td>8:1</td></tr>
+            <tr><td>Straight</td><td>7:1</td></tr>
+            <tr><td>Three of a Kind</td><td>3:1</td></tr>
+        </table>
+    </div>
+
+    <script>
+        let credits = 1000;
+        let ante = 0;
+        let playBet = 0;
+        let tripsBet = 0;
+        let deck = [];
+        let playerHand = [];
+        let dealerHand = [];
+        let communityCards = [];
+        let gamePhase = 0;
+        let hasBet = false;
+
+        const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+        const suits = ['♠', '♥', '♦', '♣'];
+
+        function createDeck() {
+            deck = [];
+            for (let suit of suits) {
+                for (let rank of ranks) {
+                    deck.push({ rank, suit });
+                }
+            }
+            shuffleDeck();
+        }
+
+        function shuffleDeck() {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+        }
+
+        function dealCard() {
+            return deck.pop();
+        }
+
+        function renderCard(card, isHidden = false) {
+            const cardEl = document.createElement('div');
+            if (isHidden) {
+                cardEl.className = 'card back';
+                cardEl.textContent = '🎰';
+            } else {
+                cardEl.className = `card ${['♥', '♦'].includes(card.suit) ? 'red' : ''}`;
+                cardEl.textContent = card.rank + card.suit;
+            }
+            return cardEl;
+        }
+
+        function updateCredits(amount) {
+            credits += amount;
+            document.getElementById('credits').textContent = credits.toFixed(0);
+        }
+
+        function dealHand() {
+            ante = parseInt(document.getElementById('anteBet').value);
+            const hasTrips = document.getElementById('tripsCheck').checked;
+            tripsBet = hasTrips ? parseInt(document.getElementById('tripsBet').value) : 0;
+
+            if (ante < 5 || ante > 100) {
+                alert('Ante must be between $5 and $100');
+                return;
+            }
+
+            const totalBet = ante + tripsBet;
+            if (credits < totalBet) {
+                alert('Insufficient credits!');
+                return;
+            }
+
+            updateCredits(-totalBet);
+            playBet = 0;
+            gamePhase = 0;
+            hasBet = false;
+
+            createDeck();
+            playerHand = [dealCard(), dealCard()];
+            dealerHand = [dealCard(), dealCard()];
+            communityCards = [dealCard(), dealCard(), dealCard(), dealCard(), dealCard()];
+
+            document.getElementById('initialBet').style.display = 'none';
+            document.getElementById('playerSection').style.display = 'block';
+            document.getElementById('dealerSection').style.display = 'block';
+            document.getElementById('communitySection').style.display = 'block';
+            document.getElementById('actions').style.display = 'block';
+
+            const playerContainer = document.getElementById('playerCards');
+            playerContainer.innerHTML = '';
+            playerHand.forEach(card => playerContainer.appendChild(renderCard(card)));
+
+            const dealerContainer = document.getElementById('dealerCards');
+            dealerContainer.innerHTML = '';
+            dealerContainer.appendChild(renderCard(null, true));
+            dealerContainer.appendChild(renderCard(null, true));
+
+            showFlop();
+        }
+
+        function showFlop() {
+            gamePhase = 1;
+            const communityContainer = document.getElementById('communityCards');
+            communityContainer.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                communityContainer.appendChild(renderCard(communityCards[i]));
+            }
+            communityContainer.appendChild(renderCard(null, true));
+            communityContainer.appendChild(renderCard(null, true));
+
+            document.getElementById('actionMessage').textContent = 'After seeing the FLOP: Fold, or Bet 2X?';
+            document.getElementById('bet2x').textContent = (ante * 2);
+            document.getElementById('foldBtn').style.display = 'inline-block';
+            document.getElementById('bet2xBtn').style.display = 'inline-block';
+            document.getElementById('checkBtn').style.display = 'none';
+            document.getElementById('bet1xBtn').style.display = 'none';
+        }
+
+        function showTurn() {
+            gamePhase = 2;
+            const communityContainer = document.getElementById('communityCards');
+            communityContainer.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                communityContainer.appendChild(renderCard(communityCards[i]));
+            }
+            communityContainer.appendChild(renderCard(null, true));
+
+            document.getElementById('actionMessage').textContent = 'After seeing the TURN: Check or Bet 1X?';
+            document.getElementById('bet1x').textContent = ante;
+            document.getElementById('foldBtn').style.display = 'none';
+            document.getElementById('bet2xBtn').style.display = 'none';
+            document.getElementById('checkBtn').style.display = 'inline-block';
+            document.getElementById('bet1xBtn').style.display = 'inline-block';
+        }
+
+        function showRiver() {
+            const communityContainer = document.getElementById('communityCards');
+            communityContainer.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                communityContainer.appendChild(renderCard(communityCards[i]));
+            }
+            document.getElementById('actions').style.display = 'none';
+            evaluateHands();
+        }
+
+        function playerFold() {
+            document.getElementById('result').innerHTML = `
+                <div style="color: #f44336">
+                    You folded!<br>
+                    Lost Ante: -$${ante}
+                </div>
+            `;
+            endGame();
+        }
+
+        function playerCheck() {
+            showRiver();
+        }
+
+        function playerBet(multiplier) {
+            if (hasBet) {
+                alert('You can only bet once!');
+                return;
+            }
+
+            playBet = ante * multiplier;
+            if (credits < playBet) {
+                alert('Insufficient credits!');
+                return;
+            }
+
+            updateCredits(-playBet);
+            hasBet = true;
+
+            if (gamePhase === 1) {
+                showRiver();
+            } else {
+                showRiver();
+            }
+        }
+
+        function evaluateHands() {
+            const dealerContainer = document.getElementById('dealerCards');
+            dealerContainer.innerHTML = '';
+            dealerHand.forEach(card => dealerContainer.appendChild(renderCard(card)));
+
+            const playerBest = getBestHand([...playerHand, ...communityCards]);
+            const dealerBest = getBestHand([...dealerHand, ...communityCards]);
+
+            const dealerQualifies = dealerBest.rank >= 2;
+            let resultText = `<strong>Your Hand:</strong> ${playerBest.name}<br>`;
+            resultText += `<strong>Dealer Hand:</strong> ${dealerBest.name}<br><br>`;
+
+            let totalWin = 0;
+
+            if (tripsBet > 0) {
+                const tripsBonus = getTripsBonus(playerBest);
+                if (tripsBonus > 0) {
+                    const tripsWin = tripsBet * tripsBonus;
+                    totalWin += tripsWin;
+                    resultText += `💎 Trips Bonus: ${tripsBonus}:1 = +$${tripsWin}<br>`;
+                }
+            }
+
+            const anteBonus = getAnteBonus(playerBest);
+            if (anteBonus > 0) {
+                const bonusWin = ante * anteBonus;
+                totalWin += bonusWin;
+                resultText += `🎁 Ante Bonus: ${anteBonus}:1 = +$${bonusWin}<br>`;
+            }
+
+            if (!hasBet) {
+                resultText += `<br><div style="color: #FFA500">You checked - Ante pushes</div>`;
+                updateCredits(ante);
+            } else if (playerBest.rank > dealerBest.rank) {
+                const mainWin = ante + playBet;
+                totalWin += mainWin;
+                resultText += `<br><div style="color: #4CAF50">YOU WIN! +$${mainWin}</div>`;
+                updateCredits(ante + playBet + mainWin);
+            } else if (dealerBest.rank > playerBest.rank) {
+                resultText += `<br><div style="color: #f44336">Dealer wins</div>`;
+            } else {
+                resultText += `<br><div style="color: #FFA500">Push - Bets returned</div>`;
+                updateCredits(ante + playBet);
+            }
+
+            if (totalWin > 0) {
+                updateCredits(totalWin);
+                resultText += `<br><strong style="color: #FFD700">Total Win: +$${totalWin}</strong>`;
+            }
+
+            document.getElementById('result').innerHTML = resultText;
+            endGame();
+        }
+
+        function getBestHand(cards) {
+            const rankValues = { '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14 };
+            const values = cards.map(c => rankValues[c.rank]).sort((a, b) => b - a);
+            const suits = cards.map(c => c.suit);
+            
+            const valueCounts = {};
+            values.forEach(v => valueCounts[v] = (valueCounts[v] || 0) + 1);
+            const counts = Object.values(valueCounts).sort((a, b) => b - a);
+            
+            const isFlush = suits.filter(s => s === suits[0]).length >= 5;
+            const uniqueValues = [...new Set(values)];
+            const isStraight = uniqueValues.length >= 5 && uniqueValues[0] - uniqueValues[4] === 4;
+            const isRoyal = isStraight && uniqueValues[0] === 14;
+            
+            if (isRoyal && isFlush) return { name: 'Royal Flush', rank: 10 };
+            if (isStraight && isFlush) return { name: 'Straight Flush', rank: 9 };
+            if (counts[0] === 4) return { name: 'Four of a Kind', rank: 8 };
+            if (counts[0] === 3 && counts[1] === 2) return { name: 'Full House', rank: 7 };
+            if (isFlush) return { name: 'Flush', rank: 6 };
+            if (isStraight) return { name: 'Straight', rank: 5 };
+            if (counts[0] === 3) return { name: 'Three of a Kind', rank: 4 };
+            if (counts[0] === 2 && counts[1] === 2) return { name: 'Two Pair', rank: 3 };
+            if (counts[0] === 2) return { name: 'Pair', rank: 2 };
+            
+            return { name: 'High Card', rank: 1 };
+        }
+
+        function getAnteBonus(hand) {
+            const bonuses = {
+                'Royal Flush': 50,
+                'Straight Flush': 20,
+                'Four of a Kind': 10,
+                'Full House': 3,
+                'Flush': 2,
+                'Straight': 1
+            };
+            return bonuses[hand.name] || 0;
+        }
+
+        function getTripsBonus(hand) {
+            const bonuses = {
+                'Royal Flush': 50,
+                'Straight Flush': 40,
+                'Four of a Kind': 30,
+                'Full House': 9,
+                'Flush': 8,
+                'Straight': 7,
+                'Three of a Kind': 3
+            };
+            return bonuses[hand.name] || 0;
+        }
+
+        function endGame() {
+            setTimeout(() => {
+                document.getElementById('initialBet').style.display = 'block';
+                document.getElementById('playerSection').style.display = 'none';
+                document.getElementById('dealerSection').style.display = 'none';
+                document.getElementById('communitySection').style.display = 'none';
+                document.getElementById('actions').style.display = 'none';
+                document.getElementById('result').innerHTML = '';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
