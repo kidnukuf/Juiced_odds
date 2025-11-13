@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Let It Ride - Juiced Odds</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a472a 0%, #0d2818 100%);
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .juiced-logo {
+            display: block;
+            max-width: 180px;
+            margin: 0 auto 20px;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+        }
+        #game {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(0, 100, 0, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+        h1 {
+            color: #FFD700;
+            text-shadow: 2px 2px 8px #000;
+            margin-bottom: 10px;
+        }
+        .credits {
+            font-size: 28px;
+            color: #FFD700;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .card {
+            display: inline-block;
+            width: 70px;
+            height: 100px;
+            margin: 5px;
+            background: white;
+            border: 3px solid #FFD700;
+            border-radius: 10px;
+            font-size: 32px;
+            line-height: 100px;
+            font-weight: bold;
+            color: #000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .card.red { color: #dc143c; }
+        .card.back {
+            background: linear-gradient(135deg, #8B0000 0%, #B22222 100%);
+            color: white;
+            font-size: 50px;
+        }
+        .hand-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+        }
+        .hand-label {
+            font-size: 22px;
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 215, 0, 0.5);
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        input[type="number"] {
+            width: 100px;
+            padding: 10px;
+            font-size: 18px;
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .bet-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+        .bets-display {
+            font-size: 20px;
+            color: #FFD700;
+            margin: 15px 0;
+        }
+        #result {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFD700;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            min-height: 50px;
+        }
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        th, td {
+            border: 1px solid #FFD700;
+            padding: 10px 15px;
+            color: #fff;
+        }
+        th {
+            background: rgba(255, 215, 0, 0.3);
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <img src="https://page.gensparksite.com/v1/base64_upload/77c690c74ee132fb010726d73cf34a99" alt="Juiced Odds" class="juiced-logo">
+        <h1>🎰 LET IT RIDE 🎰</h1>
+        <p style="color: #FFD700;">3 Player Cards + 2 Community Cards • Pull Back or Let It Ride!</p>
+
+        <div class="credits">
+            💰 Credits: $<span id="credits">1000</span>
+        </div>
+
+        <div class="bet-section" id="initialBet">
+            <label style="color: #FFD700; font-weight: bold;">Base Bet (3x this amount): $</label>
+            <input type="number" id="betAmount" min="5" max="100" value="10">
+            <br><br>
+            <button onclick="dealHand()">🎴 DEAL CARDS</button>
+        </div>
+
+        <div class="bets-display" id="betsDisplay" style="display: none;">
+            BET 1: $<span id="bet1">0</span> | 
+            BET 2: $<span id="bet2">0</span> | 
+            BET 3: $<span id="bet3">0</span>
+        </div>
+
+        <div class="hand-section" style="display: none;" id="playerSection">
+            <div class="hand-label">🎯 Your 3 Cards</div>
+            <div id="playerCards"></div>
+        </div>
+
+        <div class="hand-section" style="display: none;" id="communitySection">
+            <div class="hand-label">🎲 Community Cards</div>
+            <div id="communityCards"></div>
+        </div>
+
+        <div id="actions" style="margin: 20px 0; display: none;">
+            <button id="pullBackBtn" onclick="pullBack()">⬅️ PULL BACK</button>
+            <button id="letRideBtn" onclick="letRide()">➡️ LET IT RIDE</button>
+        </div>
+
+        <div id="result"></div>
+
+        <h3 style="color: #FFD700; margin-top: 40px;">📊 Main Game Paytable</h3>
+        <table>
+            <tr><th>Hand</th><th>Payout</th></tr>
+            <tr><td>Royal Flush</td><td>1000:1</td></tr>
+            <tr><td>Straight Flush</td><td>200:1</td></tr>
+            <tr><td>Four of a Kind</td><td>50:1</td></tr>
+            <tr><td>Full House</td><td>11:1</td></tr>
+            <tr><td>Flush</td><td>8:1</td></tr>
+            <tr><td>Straight</td><td>5:1</td></tr>
+            <tr><td>Three of a Kind</td><td>3:1</td></tr>
+            <tr><td>Two Pair</td><td>2:1</td></tr>
+            <tr><td>Pair of 10s or Better</td><td>1:1</td></tr>
+        </table>
+
+        <h3 style="color: #FFD700; margin-top: 30px;">💎 Pair Plus Bonus</h3>
+        <table>
+            <tr><th>Hand</th><th>Payout</th></tr>
+            <tr><td>Straight Flush</td><td>35:1</td></tr>
+            <tr><td>Three of a Kind</td><td>25:1</td></tr>
+            <tr><td>Full House</td><td>15:1</td></tr>
+            <tr><td>Flush</td><td>10:1</td></tr>
+            <tr><td>Straight</td><td>6:1</td></tr>
+            <tr><td>Trips</td><td>3:1</td></tr>
+            <tr><td>Pair 10s or Better</td><td>1:1</td></tr>
+        </table>
+    </div>
+
+    <script>
+        let credits = 1000;
+        let baseBet = 0;
+        let bets = [0, 0, 0];
+        let deck = [];
+        let playerHand = [];
+        let communityCards = [];
+        let currentDecision = 0;
+
+        const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+        const suits = ['♠', '♥', '♦', '♣'];
+
+        function createDeck() {
+            deck = [];
+            for (let suit of suits) {
+                for (let rank of ranks) {
+                    deck.push({ rank, suit });
+                }
+            }
+            shuffleDeck();
+        }
+
+        function shuffleDeck() {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+        }
+
+        function dealCard() {
+            return deck.pop();
+        }
+
+        function renderCard(card, isHidden = false) {
+            const cardEl = document.createElement('div');
+            if (isHidden) {
+                cardEl.className = 'card back';
+                cardEl.textContent = '🎰';
+            } else {
+                cardEl.className = `card ${['♥', '♦'].includes(card.suit) ? 'red' : ''}`;
+                cardEl.textContent = card.rank + card.suit;
+            }
+            return cardEl;
+        }
+
+        function updateCredits(amount) {
+            credits += amount;
+            document.getElementById('credits').textContent = credits.toFixed(0);
+        }
+
+        function updateBetsDisplay() {
+            document.getElementById('bet1').textContent = bets[0];
+            document.getElementById('bet2').textContent = bets[1];
+            document.getElementById('bet3').textContent = bets[2];
+        }
+
+        function dealHand() {
+            baseBet = parseInt(document.getElementById('betAmount').value);
+            if (baseBet < 5 || baseBet > 100) {
+                alert('Base bet must be between $5 and $100');
+                return;
+            }
+
+            const totalBet = baseBet * 3;
+            if (credits < totalBet) {
+                alert('Insufficient credits!');
+                return;
+            }
+
+            updateCredits(-totalBet);
+            bets = [baseBet, baseBet, baseBet];
+            currentDecision = 0;
+
+            createDeck();
+            playerHand = [dealCard(), dealCard(), dealCard()];
+            communityCards = [dealCard(), dealCard()];
+
+            document.getElementById('initialBet').style.display = 'none';
+            document.getElementById('betsDisplay').style.display = 'block';
+            document.getElementById('playerSection').style.display = 'block';
+            document.getElementById('communitySection').style.display = 'block';
+            document.getElementById('actions').style.display = 'block';
+
+            const playerContainer = document.getElementById('playerCards');
+            playerContainer.innerHTML = '';
+            playerHand.forEach(card => playerContainer.appendChild(renderCard(card)));
+
+            const communityContainer = document.getElementById('communityCards');
+            communityContainer.innerHTML = '';
+            communityContainer.appendChild(renderCard(null, true));
+            communityContainer.appendChild(renderCard(null, true));
+
+            updateBetsDisplay();
+            document.getElementById('result').textContent = 'Decision 1: Pull back BET 1 or let it ride?';
+        }
+
+        function pullBack() {
+            if (currentDecision === 0) {
+                updateCredits(bets[0]);
+                bets[0] = 0;
+                revealFirstCommunity();
+            } else if (currentDecision === 1) {
+                updateCredits(bets[1]);
+                bets[1] = 0;
+                revealSecondCommunity();
+            }
+            updateBetsDisplay();
+        }
+
+        function letRide() {
+            if (currentDecision === 0) {
+                revealFirstCommunity();
+            } else if (currentDecision === 1) {
+                revealSecondCommunity();
+            }
+        }
+
+        function revealFirstCommunity() {
+            currentDecision = 1;
+            const communityContainer = document.getElementById('communityCards');
+            communityContainer.innerHTML = '';
+            communityContainer.appendChild(renderCard(communityCards[0]));
+            communityContainer.appendChild(renderCard(null, true));
+            document.getElementById('result').textContent = 'Decision 2: Pull back BET 2 or let it ride?';
+        }
+
+        function revealSecondCommunity() {
+            currentDecision = 2;
+            const communityContainer = document.getElementById('communityCards');
+            communityContainer.innerHTML = '';
+            communityContainer.appendChild(renderCard(communityCards[0]));
+            communityContainer.appendChild(renderCard(communityCards[1]));
+            
+            document.getElementById('actions').style.display = 'none';
+            evaluateHand();
+        }
+
+        function evaluateHand() {
+            const fullHand = [...playerHand, ...communityCards];
+            const handResult = getPokerHand(fullHand);
+            
+            const payouts = {
+                'Royal Flush': 1000,
+                'Straight Flush': 200,
+                'Four of a Kind': 50,
+                'Full House': 11,
+                'Flush': 8,
+                'Straight': 5,
+                'Three of a Kind': 3,
+                'Two Pair': 2,
+                'Pair': 1
+            };
+
+            const payout = payouts[handResult.name] || 0;
+            const totalBet = bets[0] + bets[1] + bets[2];
+            
+            if (payout > 0 && handResult.qualifies) {
+                const winAmount = totalBet * payout;
+                updateCredits(totalBet + winAmount);
+                document.getElementById('result').innerHTML = `
+                    <div style="color: #4CAF50">
+                        🎉 ${handResult.name}! Pays ${payout}:1<br>
+                        Win: +$${winAmount}
+                    </div>
+                `;
+            } else {
+                document.getElementById('result').innerHTML = `
+                    <div style="color: #f44336">
+                        ${handResult.name}<br>
+                        No payout - Hand must be 10s or better
+                    </div>
+                `;
+            }
+
+            setTimeout(() => {
+                document.getElementById('initialBet').style.display = 'block';
+                document.getElementById('betsDisplay').style.display = 'none';
+                document.getElementById('playerSection').style.display = 'none';
+                document.getElementById('communitySection').style.display = 'none';
+            }, 3000);
+        }
+
+        function getPokerHand(cards) {
+            const rankValues = { '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14 };
+            const values = cards.map(c => rankValues[c.rank]).sort((a, b) => b - a);
+            const suits = cards.map(c => c.suit);
+            
+            const valueCounts = {};
+            values.forEach(v => valueCounts[v] = (valueCounts[v] || 0) + 1);
+            const counts = Object.values(valueCounts).sort((a, b) => b - a);
+            
+            const isFlush = new Set(suits).size === 1;
+            const isStraight = values[0] - values[4] === 4 && new Set(values).size === 5;
+            const isRoyal = isStraight && values[0] === 14 && values[4] === 10;
+            
+            if (isRoyal && isFlush) return { name: 'Royal Flush', qualifies: true };
+            if (isStraight && isFlush) return { name: 'Straight Flush', qualifies: true };
+            if (counts[0] === 4) return { name: 'Four of a Kind', qualifies: true };
+            if (counts[0] === 3 && counts[1] === 2) return { name: 'Full House', qualifies: true };
+            if (isFlush) return { name: 'Flush', qualifies: true };
+            if (isStraight) return { name: 'Straight', qualifies: true };
+            if (counts[0] === 3) return { name: 'Three of a Kind', qualifies: true };
+            if (counts[0] === 2 && counts[1] === 2) return { name: 'Two Pair', qualifies: true };
+            if (counts[0] === 2) {
+                const pairValue = Object.keys(valueCounts).find(k => valueCounts[k] === 2);
+                const qualifies = parseInt(pairValue) >= 10;
+                return { name: 'Pair', qualifies };
+            }
+            
+            return { name: 'High Card', qualifies: false };
+        }
+
+        createDeck();
+    </script>
+</body>
+</html>
