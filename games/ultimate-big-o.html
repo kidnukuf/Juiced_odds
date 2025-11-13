@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Big O - Juiced Odds</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .juiced-logo {
+            display: block;
+            max-width: 180px;
+            margin: 0 auto 20px;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            color: #FFD700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        .subtitle {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            color: #FFA500;
+        }
+        .credits-display {
+            text-align: center;
+            font-size: 1.8em;
+            color: #FFD700;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            border: 3px solid #FFD700;
+        }
+        .game-area {
+            background: rgba(0, 0, 0, 0.5);
+            border: 3px solid #FFD700;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        .betting-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        .betting-section h2 {
+            color: #FFD700;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+        .bet-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .bet-input {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            font-size: 1.1em;
+            background: rgba(255, 255, 255, 0.95);
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        button:hover:not(:disabled) {
+            transform: translateY(-3px);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            width: 100%;
+            font-size: 1.3em;
+        }
+        .btn-check {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            flex: 1;
+        }
+        .btn-raise {
+            background: linear-gradient(135deg, #2196F3 0%, #0b7dda 100%);
+            color: white;
+            flex: 1;
+        }
+        .btn-fold {
+            background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
+            color: white;
+            flex: 1;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .cards-section {
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(0, 100, 0, 0.3);
+            border-radius: 15px;
+        }
+        .cards-label {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #FFD700;
+        }
+        .cards-display {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            min-height: 140px;
+            align-items: center;
+        }
+        .card {
+            width: 80px;
+            height: 115px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+            transition: transform 0.3s;
+            border: 3px solid #FFD700;
+        }
+        .card:hover { transform: translateY(-8px); }
+        .card.back {
+            background: linear-gradient(135deg, #8B0000 0%, #B22222 100%);
+            font-size: 3em;
+            color: #FFD700;
+        }
+        .card.hearts, .card.diamonds { color: #DC143C; }
+        .card.clubs, .card.spades { color: #000; }
+        .card-rank { font-size: 2em; line-height: 1; }
+        .card-suit { font-size: 2.2em; line-height: 1; }
+        .results-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            border: 3px solid #FFD700;
+        }
+        .results-section h2 {
+            color: #FFD700;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+        .result-item {
+            margin: 15px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            border-left: 5px solid #FFD700;
+        }
+        .result-item.win { border-left-color: #4CAF50; background: rgba(76, 175, 80, 0.2); }
+        .result-item.loss { border-left-color: #f44336; background: rgba(244, 67, 54, 0.2); }
+        .result-item.push { border-left-color: #FFA500; background: rgba(255, 165, 0, 0.2); }
+        .result-title {
+            font-weight: bold;
+            font-size: 1.3em;
+            margin-bottom: 8px;
+            color: #FFD700;
+        }
+        .result-detail {
+            font-size: 1.1em;
+            margin: 5px 0;
+        }
+        .hidden { display: none; }
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .card { width: 65px; height: 95px; font-size: 1.2em; }
+            .action-buttons { flex-direction: column; }
+            button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://page.gensparksite.com/v1/base64_upload/77c690c74ee132fb010726d73cf34a99" alt="Juiced Odds" class="juiced-logo">
+        
+        <h1>♠️ ULTIMATE BIG O ♠️</h1>
+        <p class="subtitle">5-Card Omaha • Must Use 2 Hole + 3 Community • Dealer Qualifies QQ+</p>
+
+        <div class="credits-display">
+            💰 Credits: $<span id="credits">1000</span>
+        </div>
+
+        <div class="game-area">
+            <div class="betting-section" id="bettingSection">
+                <h2>💵 Place Your Bets</h2>
+                <div class="bet-row">
+                    <div class="bet-input">
+                        <label>Ante Bet (REQUIRED) $5-$500</label>
+                        <input type="number" id="anteBet" value="10" min="5" max="500">
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="dealCards()">🎴 DEAL CARDS</button>
+            </div>
+
+            <div class="cards-section hidden" id="playerCardsSection">
+                <div class="cards-label">🎯 Your 5 Hole Cards</div>
+                <div class="cards-display" id="playerCards"></div>
+            </div>
+
+            <div class="betting-section hidden" id="round1Section">
+                <h2>Round 1: Pre-Flop Decision</h2>
+                <div class="action-buttons">
+                    <button class="btn-check" onclick="playerCheck(1)">✓ CHECK</button>
+                    <button class="btn-raise" onclick="playerRaise(1, 2)">🔼 RAISE 2X ($<span id="raise2x"></span>)</button>
+                    <button class="btn-raise" onclick="playerRaise(1, 3)">🔼🔼 RAISE 3X ($<span id="raise3x"></span>)</button>
+                </div>
+            </div>
+
+            <div class="cards-section hidden" id="flopSection">
+                <div class="cards-label">🎲 Community Cards (Flop)</div>
+                <div class="cards-display" id="flopCards"></div>
+            </div>
+
+            <div class="betting-section hidden" id="round2Section">
+                <h2>Round 2: Post-Flop Decision</h2>
+                <div class="action-buttons">
+                    <button class="btn-check" onclick="playerCheck(2)">✓ CHECK</button>
+                    <button class="btn-raise" onclick="playerRaise(2, 2)">🔼 RAISE 2X ($<span id="raise2x2"></span>)</button>
+                </div>
+            </div>
+
+            <div class="cards-section hidden" id="riverSection">
+                <div class="cards-label">🎲 All Community Cards</div>
+                <div class="cards-display" id="riverCards"></div>
+            </div>
+
+            <div class="betting-section hidden" id="round3Section">
+                <h2>Round 3: Final Decision</h2>
+                <div class="action-buttons">
+                    <button class="btn-raise" onclick="playerRaise(3, 1)">🔼 RAISE 1X ($<span id="raise1x"></span>)</button>
+                    <button class="btn-fold" onclick="playerFold()">❌ FOLD</button>
+                </div>
+            </div>
+
+            <div class="cards-section hidden" id="dealerCardsSection">
+                <div class="cards-label">🎰 Dealer's 5 Hole Cards</div>
+                <div class="cards-display" id="dealerCards"></div>
+            </div>
+
+            <div class="results-section hidden" id="resultsSection"></div>
+
+            <div class="hidden" id="newGameSection" style="text-align: center; margin-top: 30px;">
+                <button class="btn-primary" onclick="newGame()">🎰 NEW GAME</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let game = null;
+        let credits = 1000;
+        let currentRound = 0;
+        let playerRaised = false;
+
+        function updateCredits(delta) {
+            credits += delta;
+            document.getElementById('credits').textContent = credits.toFixed(0);
+        }
+
+        class Card {
+            constructor(rank, suit) {
+                this.rank = rank;
+                this.suit = suit;
+            }
+            
+            getRankValue() {
+                const values = {'A': 14, 'K': 13, 'Q': 12, 'J': 11, '10': 10, '9': 9, '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '3': 3, '2': 2};
+                return values[this.rank];
+            }
+
+            getSuitSymbol() {
+                const symbols = {'hearts': '♥', 'diamonds': '♦', 'clubs': '♣', 'spades': '♠'};
+                return symbols[this.suit];
+            }
+        }
+
+        class Deck {
+            constructor() {
+                this.cards = [];
+                this.reset();
+            }
+            
+            reset() {
+                const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+                const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
+                this.cards = [];
+                for (let suit of suits) {
+                    for (let rank of ranks) {
+                        this.cards.push(new Card(rank, suit));
+                    }
+                }
+            }
+            
+            shuffle() {
+                for (let i = this.cards.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+                }
+            }
+            
+            deal(count) {
+                return this.cards.splice(0, count);
+            }
+        }
+
+        class BigOGame {
+            constructor() {
+                this.deck = new Deck();
+                this.playerCards = [];
+                this.dealerCards = [];
+                this.communityCards = [];
+                this.bets = { ante: 0, raise: 0 };
+            }
+            
+            startNewHand(ante) {
+                this.deck.reset();
+                this.deck.shuffle();
+                this.bets.ante = ante;
+                this.bets.raise = 0;
+                this.playerCards = this.deck.deal(5);
+                this.dealerCards = this.deck.deal(5);
+                this.communityCards = this.deck.deal(5);
+            }
+
+            evaluateBestHand(holeCards, communityCards) {
+                let bestHand = null;
+                let bestRank = -1;
+                
+                for (let i = 0; i < 5; i++) {
+                    for (let j = i + 1; j < 5; j++) {
+                        for (let a = 0; a < 5; a++) {
+                            for (let b = a + 1; b < 5; b++) {
+                                for (let c = b + 1; c < 5; c++) {
+                                    const hand = [holeCards[i], holeCards[j], communityCards[a], communityCards[b], communityCards[c]];
+                                    const evaluation = this.evaluateHand(hand);
+                                    if (evaluation.rank > bestRank) {
+                                        bestRank = evaluation.rank;
+                                        bestHand = evaluation;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return bestHand;
+            }
+
+            evaluateHand(cards) {
+                const ranks = cards.map(c => c.getRankValue()).sort((a, b) => b - a);
+                const suits = cards.map(c => c.suit);
+                const isFlush = new Set(suits).size === 1;
+                const isStraight = ranks[0] - ranks[4] === 4 && new Set(ranks).size === 5;
+                
+                const rankCounts = {};
+                ranks.forEach(r => rankCounts[r] = (rankCounts[r] || 0) + 1);
+                const counts = Object.values(rankCounts).sort((a, b) => b - a);
+                
+                if (isFlush && isStraight && ranks[0] === 14) return { rank: 10, name: 'Royal Flush' };
+                if (isFlush && isStraight) return { rank: 9, name: 'Straight Flush' };
+                if (counts[0] === 4) return { rank: 8, name: 'Four of a Kind' };
+                if (counts[0] === 3 && counts[1] === 2) return { rank: 7, name: 'Full House' };
+                if (isFlush) return { rank: 6, name: 'Flush' };
+                if (isStraight) return { rank: 5, name: 'Straight' };
+                if (counts[0] === 3) return { rank: 4, name: 'Three of a Kind' };
+                if (counts[0] === 2 && counts[1] === 2) return { rank: 3, name: 'Two Pair' };
+                if (counts[0] === 2) {
+                    const pairValue = Object.keys(rankCounts).find(k => rankCounts[k] === 2);
+                    return { rank: 2, name: 'Pair', pairValue: parseInt(pairValue) };
+                }
+                return { rank: 0, name: 'High Card' };
+            }
+        }
+
+        function dealCards() {
+            const ante = parseInt(document.getElementById('anteBet').value);
+            if (ante < 5 || ante > 500) {
+                alert('Ante must be between $5 and $500');
+                return;
+            }
+            if (credits < ante) {
+                alert('Insufficient credits!');
+                return;
+            }
+
+            updateCredits(-ante);
+            game = new BigOGame();
+            game.startNewHand(ante);
+            currentRound = 1;
+            playerRaised = false;
+
+            displayPlayerCards();
+            showRound1Actions();
+        }
+
+        function displayPlayerCards() {
+            const container = document.getElementById('playerCards');
+            container.innerHTML = '';
+            game.playerCards.forEach(card => container.appendChild(createCardElement(card)));
+            document.getElementById('playerCardsSection').classList.remove('hidden');
+            document.getElementById('bettingSection').classList.add('hidden');
+        }
+
+        function createCardElement(card) {
+            const cardEl = document.createElement('div');
+            cardEl.className = `card ${card.suit}`;
+            cardEl.innerHTML = `<div class="card-rank">${card.rank}</div><div class="card-suit">${card.getSuitSymbol()}</div>`;
+            return cardEl;
+        }
+
+        function createBackCard() {
+            const cardEl = document.createElement('div');
+            cardEl.className = 'card back';
+            cardEl.textContent = '🎰';
+            return cardEl;
+        }
+
+        function showRound1Actions() {
+            const ante = game.bets.ante;
+            document.getElementById('raise2x').textContent = (ante * 2).toFixed(0);
+            document.getElementById('raise3x').textContent = (ante * 3).toFixed(0);
+            document.getElementById('round1Section').classList.remove('hidden');
+        }
+
+        function playerCheck(round) {
+            if (round === 1) {
+                document.getElementById('round1Section').classList.add('hidden');
+                showFlop();
+            } else if (round === 2) {
+                document.getElementById('round2Section').classList.add('hidden');
+                showRiver();
+            }
+        }
+
+        function playerRaise(round, multiplier) {
+            const raiseAmount = game.bets.ante * multiplier;
+            if (credits < raiseAmount) {
+                alert('Insufficient credits!');
+                return;
+            }
+
+            updateCredits(-raiseAmount);
+            game.bets.raise += raiseAmount;
+            playerRaised = true;
+            
+            document.getElementById(`round${round}Section`).classList.add('hidden');
+            
+            if (round === 1) showFlop();
+            else if (round === 2) showRiver();
+            else if (round === 3) showdown();
+        }
+
+        function showFlop() {
+            const container = document.getElementById('flopCards');
+            container.innerHTML = '';
+            for (let i = 0; i < 3; i++) container.appendChild(createCardElement(game.communityCards[i]));
+            for (let i = 3; i < 5; i++) container.appendChild(createBackCard());
+            document.getElementById('flopSection').classList.remove('hidden');
+            
+            if (playerRaised) {
+                setTimeout(() => showRiver(), 1500);
+            } else {
+                showRound2Actions();
+            }
+        }
+
+        function showRound2Actions() {
+            const ante = game.bets.ante;
+            document.getElementById('raise2x2').textContent = (ante * 2).toFixed(0);
+            document.getElementById('round2Section').classList.remove('hidden');
+        }
+
+        function showRiver() {
+            const container = document.getElementById('riverCards');
+            container.innerHTML = '';
+            for (let i = 0; i < 5; i++) container.appendChild(createCardElement(game.communityCards[i]));
+            document.getElementById('riverSection').classList.remove('hidden');
+            
+            if (playerRaised) {
+                setTimeout(() => showdown(), 1500);
+            } else {
+                showRound3Actions();
+            }
+        }
+
+        function showRound3Actions() {
+            const ante = game.bets.ante;
+            document.getElementById('raise1x').textContent = ante.toFixed(0);
+            document.getElementById('round3Section').classList.remove('hidden');
+        }
+
+        function playerFold() {
+            document.getElementById('round3Section').classList.add('hidden');
+            showDealerCards();
+            displayFoldResults();
+        }
+
+        function displayFoldResults() {
+            const container = document.getElementById('resultsSection');
+            container.innerHTML = `
+                <h2>❌ Folded</h2>
+                <div class="result-item loss">
+                    <div class="result-title">You Folded</div>
+                    <div class="result-detail">Lost Ante: -$${game.bets.ante}</div>
+                </div>
+            `;
+            container.classList.remove('hidden');
+            document.getElementById('newGameSection').classList.remove('hidden');
+        }
+
+        function showdown() {
+            document.getElementById('round3Section').classList.add('hidden');
+            showDealerCards();
+            displayFinalResults();
+        }
+
+        function showDealerCards() {
+            const container = document.getElementById('dealerCards');
+            container.innerHTML = '';
+            game.dealerCards.forEach(card => container.appendChild(createCardElement(card)));
+            document.getElementById('dealerCardsSection').classList.remove('hidden');
+        }
+
+        function displayFinalResults() {
+            const playerBest = game.evaluateBestHand(game.playerCards, game.communityCards);
+            const dealerBest = game.evaluateBestHand(game.dealerCards, game.communityCards);
+            
+            const dealerQualifies = dealerBest.rank >= 2 && (dealerBest.pairValue === undefined || dealerBest.pairValue >= 12);
+            const playerWins = playerBest.rank > dealerBest.rank;
+            
+            const container = document.getElementById('resultsSection');
+            let html = '<h2>🎯 Final Results</h2>';
+            
+            html += `<div class="result-item"><div class="result-title">Your Hand: ${playerBest.name}</div></div>`;
+            html += `<div class="result-item"><div class="result-title">Dealer Hand: ${dealerBest.name}</div><div class="result-detail">${dealerQualifies ? '✓ Dealer Qualifies' : '✗ Dealer Does Not Qualify'}</div></div>`;
+            
+            let totalPayout = 0;
+            
+            if (playerWins) {
+                if (dealerQualifies) {
+                    totalPayout = game.bets.ante + game.bets.raise;
+                    html += `<div class="result-item win"><div class="result-title">YOU WIN!</div><div class="result-detail">Ante + Raise: +$${totalPayout}</div></div>`;
+                } else {
+                    totalPayout = game.bets.raise;
+                    html += `<div class="result-item push"><div class="result-title">YOU WIN!</div><div class="result-detail">Ante Pushes, Raise Pays: +$${totalPayout}</div></div>`;
+                    totalPayout += game.bets.ante;
+                }
+            } else if (playerBest.rank === dealerBest.rank) {
+                html += `<div class="result-item push"><div class="result-title">PUSH</div></div>`;
+                totalPayout = game.bets.ante + game.bets.raise;
+            } else {
+                html += `<div class="result-item loss"><div class="result-title">Dealer Wins</div></div>`;
+            }
+            
+            if (totalPayout > 0) updateCredits(totalPayout);
+            
+            container.innerHTML = html;
+            container.classList.remove('hidden');
+            document.getElementById('newGameSection').classList.remove('hidden');
+        }
+
+        function newGame() {
+            document.getElementById('bettingSection').classList.remove('hidden');
+            document.getElementById('playerCardsSection').classList.add('hidden');
+            document.getElementById('round1Section').classList.add('hidden');
+            document.getElementById('flopSection').classList.add('hidden');
+            document.getElementById('round2Section').classList.add('hidden');
+            document.getElementById('riverSection').classList.add('hidden');
+            document.getElementById('round3Section').classList.add('hidden');
+            document.getElementById('dealerCardsSection').classList.add('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('newGameSection').classList.add('hidden');
+            game = null;
+            currentRound = 0;
+            playerRaised = false;
+        }
+    </script>
+</body>
+</html>
