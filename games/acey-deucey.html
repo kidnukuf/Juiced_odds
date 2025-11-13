@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish 21 - Juiced Odds</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #2c1810 0%, #1a0f0a 100%);
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .juiced-logo {
+            display: block;
+            max-width: 180px;
+            margin: 0 auto 20px;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+        }
+        #game {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(0, 80, 0, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+        h1 {
+            color: #FFD700;
+            text-shadow: 2px 2px 8px #000;
+            margin-bottom: 10px;
+        }
+        .credits {
+            font-size: 28px;
+            color: #FFD700;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .card {
+            display: inline-block;
+            width: 70px;
+            height: 100px;
+            margin: 5px;
+            background: white;
+            border: 3px solid #FFD700;
+            border-radius: 10px;
+            font-size: 32px;
+            line-height: 100px;
+            font-weight: bold;
+            color: #000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .card.red { color: #dc143c; }
+        .hand-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+        }
+        .hand-label {
+            font-size: 22px;
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 215, 0, 0.5);
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        input[type="number"] {
+            width: 100px;
+            padding: 10px;
+            font-size: 18px;
+            border: 2px solid #FFD700;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .bet-controls {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+        #result {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFD700;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            min-height: 50px;
+        }
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        th, td {
+            border: 1px solid #FFD700;
+            padding: 10px 15px;
+            color: #fff;
+        }
+        th {
+            background: rgba(255, 215, 0, 0.3);
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <img src="https://page.gensparksite.com/v1/base64_upload/77c690c74ee132fb010726d73cf34a99" alt="Juiced Odds" class="juiced-logo">
+        <h1>♠️ SPANISH 21 ♠️</h1>
+        <p style="color: #FFD700;">Player 21 Always Wins! • All 10s Removed • Dealer Hits Soft 17</p>
+
+        <div class="credits">
+            💰 Credits: $<span id="credits">1000</span>
+        </div>
+
+        <div class="bet-controls">
+            <label style="color: #FFD700; font-weight: bold;">Bet Amount: $</label>
+            <input type="number" id="betAmount" min="5" max="500" value="10">
+            <button onclick="dealHand()">🎴 DEAL</button>
+        </div>
+
+        <div class="hand-section">
+            <div class="hand-label">🎰 Dealer's Hand (<span id="dealerTotal">0</span>)</div>
+            <div id="dealerCards"></div>
+        </div>
+
+        <div class="hand-section">
+            <div class="hand-label">🎯 Your Hand (<span id="playerTotal">0</span>)</div>
+            <div id="playerCards"></div>
+        </div>
+
+        <div id="actions" style="margin: 20px 0;">
+            <button id="hitBtn" onclick="playerHit()" disabled>HIT</button>
+            <button id="standBtn" onclick="playerStand()" disabled>STAND</button>
+            <button id="doubleBtn" onclick="playerDouble()" disabled>DOUBLE DOWN</button>
+            <button id="surrenderBtn" onclick="playerSurrender()" disabled>SURRENDER</button>
+        </div>
+
+        <div id="result"></div>
+
+        <h3 style="color: #FFD700; margin-top: 40px;">📊 Bonus Payouts</h3>
+        <table>
+            <tr><th>Hand</th><th>Payout</th></tr>
+            <tr><td>Player 21 vs Dealer 21</td><td>Always WINS!</td></tr>
+            <tr><td>5-Card 21</td><td>3:2</td></tr>
+            <tr><td>6-Card 21</td><td>2:1</td></tr>
+            <tr><td>7+ Card 21</td><td>3:1</td></tr>
+            <tr><td>6-7-8 Mixed Suits</td><td>3:2</td></tr>
+            <tr><td>6-7-8 Same Suit</td><td>2:1</td></tr>
+            <tr><td>6-7-8 All Spades</td><td>3:1</td></tr>
+            <tr><td>7-7-7 Mixed Suits</td><td>3:2</td></tr>
+            <tr><td>7-7-7 Same Suit</td><td>2:1</td></tr>
+            <tr><td>7-7-7 All Spades</td><td>3:1</td></tr>
+        </table>
+    </div>
+
+    <script>
+        let credits = 1000;
+        let bet = 0;
+        let deck = [];
+        let playerHand = [];
+        let dealerHand = [];
+        let gameActive = false;
+
+        const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'J', 'Q', 'K'];
+        const suits = ['♠', '♥', '♦', '♣'];
+
+        function createDeck() {
+            deck = [];
+            for (let i = 0; i < 6; i++) {
+                for (let suit of suits) {
+                    for (let rank of ranks) {
+                        deck.push({ rank, suit });
+                    }
+                }
+            }
+            shuffleDeck();
+        }
+
+        function shuffleDeck() {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+        }
+
+        function dealCard() {
+            if (deck.length < 10) createDeck();
+            return deck.pop();
+        }
+
+        function getCardValue(card, currentTotal) {
+            if (card.rank === 'A') {
+                return (currentTotal + 11 <= 21) ? 11 : 1;
+            }
+            if (['J', 'Q', 'K'].includes(card.rank)) return 10;
+            return parseInt(card.rank);
+        }
+
+        function calculateTotal(hand) {
+            let total = 0;
+            let aces = 0;
+            for (let card of hand) {
+                if (card.rank === 'A') {
+                    aces++;
+                    total += 11;
+                } else if (['J', 'Q', 'K'].includes(card.rank)) {
+                    total += 10;
+                } else {
+                    total += parseInt(card.rank);
+                }
+            }
+            while (total > 21 && aces > 0) {
+                total -= 10;
+                aces--;
+            }
+            return total;
+        }
+
+        function renderHand(hand, elementId) {
+            const container = document.getElementById(elementId);
+            container.innerHTML = '';
+            for (let card of hand) {
+                const cardEl = document.createElement('div');
+                cardEl.className = `card ${['♥', '♦'].includes(card.suit) ? 'red' : ''}`;
+                cardEl.textContent = card.rank + card.suit;
+                container.appendChild(cardEl);
+            }
+        }
+
+        function updateCredits(amount) {
+            credits += amount;
+            document.getElementById('credits').textContent = credits.toFixed(0);
+        }
+
+        function dealHand() {
+            bet = parseInt(document.getElementById('betAmount').value);
+            if (bet < 5 || bet > 500) {
+                alert('Bet must be between $5 and $500');
+                return;
+            }
+            if (credits < bet) {
+                alert('Insufficient credits!');
+                return;
+            }
+
+            updateCredits(-bet);
+            gameActive = true;
+            playerHand = [dealCard(), dealCard()];
+            dealerHand = [dealCard(), dealCard()];
+
+            renderHand(playerHand, 'playerCards');
+            renderHand([dealerHand[0]], 'dealerCards');
+            
+            document.getElementById('playerTotal').textContent = calculateTotal(playerHand);
+            document.getElementById('dealerTotal').textContent = getCardValue(dealerHand[0], 0);
+            document.getElementById('result').textContent = '';
+
+            document.getElementById('hitBtn').disabled = false;
+            document.getElementById('standBtn').disabled = false;
+            document.getElementById('doubleBtn').disabled = false;
+            document.getElementById('surrenderBtn').disabled = false;
+
+            if (calculateTotal(playerHand) === 21) {
+                playerStand();
+            }
+        }
+
+        function playerHit() {
+            playerHand.push(dealCard());
+            renderHand(playerHand, 'playerCards');
+            const total = calculateTotal(playerHand);
+            document.getElementById('playerTotal').textContent = total;
+
+            document.getElementById('doubleBtn').disabled = true;
+            document.getElementById('surrenderBtn').disabled = true;
+
+            if (total > 21) {
+                endGame('BUST! You lose!', -bet);
+            } else if (total === 21) {
+                playerStand();
+            }
+        }
+
+        function playerStand() {
+            document.getElementById('hitBtn').disabled = true;
+            document.getElementById('standBtn').disabled = true;
+            document.getElementById('doubleBtn').disabled = true;
+            document.getElementById('surrenderBtn').disabled = true;
+
+            renderHand(dealerHand, 'dealerCards');
+            document.getElementById('dealerTotal').textContent = calculateTotal(dealerHand);
+
+            while (calculateTotal(dealerHand) < 17) {
+                dealerHand.push(dealCard());
+                renderHand(dealerHand, 'dealerCards');
+                document.getElementById('dealerTotal').textContent = calculateTotal(dealerHand);
+            }
+
+            determineWinner();
+        }
+
+        function playerDouble() {
+            if (credits < bet) {
+                alert('Insufficient credits to double!');
+                return;
+            }
+            updateCredits(-bet);
+            bet *= 2;
+
+            playerHand.push(dealCard());
+            renderHand(playerHand, 'playerCards');
+            const total = calculateTotal(playerHand);
+            document.getElementById('playerTotal').textContent = total;
+
+            if (total > 21) {
+                endGame('BUST! You lose!', -bet);
+            } else {
+                playerStand();
+            }
+        }
+
+        function playerSurrender() {
+            const refund = bet * 0.5;
+            updateCredits(refund);
+            endGame('Surrendered. Half bet returned.', 0);
+        }
+
+        function determineWinner() {
+            const playerTotal = calculateTotal(playerHand);
+            const dealerTotal = calculateTotal(dealerHand);
+
+            if (playerTotal === 21 && dealerTotal === 21) {
+                endGame('Both 21! PLAYER WINS! (Spanish 21 Rule)', bet);
+            } else if (playerTotal === 21) {
+                const bonus = checkBonuses();
+                endGame(`Blackjack! ${bonus.message}`, bet * bonus.multiplier);
+            } else if (dealerTotal > 21) {
+                endGame('Dealer busts! You WIN!', bet);
+            } else if (playerTotal > dealerTotal) {
+                endGame('You WIN!', bet);
+            } else if (dealerTotal > playerTotal) {
+                endGame('Dealer wins!', -bet);
+            } else {
+                endGame('Push!', 0);
+            }
+        }
+
+        function checkBonuses() {
+            const total = calculateTotal(playerHand);
+            const cards = playerHand.length;
+
+            if (total === 21) {
+                if (cards >= 7) return { multiplier: 3, message: '7+ Card 21! 3:1' };
+                if (cards === 6) return { multiplier: 2, message: '6-Card 21! 2:1' };
+                if (cards === 5) return { multiplier: 1.5, message: '5-Card 21! 3:2' };
+            }
+            return { multiplier: 1, message: 'Standard win 1:1' };
+        }
+
+        function endGame(message, winAmount) {
+            gameActive = false;
+            if (winAmount > 0) {
+                updateCredits(bet + winAmount);
+            }
+            document.getElementById('result').innerHTML = `
+                <div style="color: ${winAmount > 0 ? '#4CAF50' : winAmount < 0 ? '#f44336' : '#FFA500'}">
+                    ${message}<br>
+                    ${winAmount !== 0 ? `Net: ${winAmount > 0 ? '+' : ''}$${winAmount}` : ''}
+                </div>
+            `;
+            document.getElementById('hitBtn').disabled = true;
+            document.getElementById('standBtn').disabled = true;
+            document.getElementById('doubleBtn').disabled = true;
+            document.getElementById('surrenderBtn').disabled = true;
+        }
+
+        createDeck();
+    </script>
+</body>
+</html>
